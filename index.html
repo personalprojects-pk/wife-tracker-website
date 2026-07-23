@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Days Until Freedom 🎯</title>
+    <meta name="description" content="Track the days until your wife quits her job and starts her beautiful tracker website journey">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --accent: #10b981;
+            --dark: #111827;
+            --light: #f9fafb;
+            --card: #1f2937;
+            --text-primary: #f3f4f6;
+            --text-secondary: #9ca3af;
+            --gradient: linear-gradient(135deg, #6366f1 0%, #ec4899 100%);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--gradient);
+            opacity: 0.1;
+            z-index: -1;
+        }
+
+        .container {
+            background: var(--card);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 3rem;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-width: 600px;
+            width: 90%;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { transform: translateX(-100%); }
+            50% { transform: translateX(100%); }
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .counter-container {
+            background: rgba(99, 102, 241, 0.1);
+            border: 2px solid rgba(99, 102, 241, 0.3);
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 2rem 0;
+            position: relative;
+        }
+
+        .countdown {
+            font-size: 4rem;
+            font-weight: 900;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin-bottom: 1rem;
+        }
+
+        .label {
+            font-size: 1.2rem;
+            color: var(--secondary);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            border-radius: 50px;
+            color: var(--accent);
+            font-weight: 600;
+            margin-top: 1rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            margin: 2rem 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--gradient);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+            animation: fillAnimation 1s ease-out;
+        }
+
+        @keyframes fillAnimation {
+            from { width: 0%; }
+            to { width: var(--progress-width); }
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .info-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .info-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.2);
+        }
+
+        .info-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .info-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .motivation {
+            background: rgba(236, 72, 153, 0.1);
+            border-left: 4px solid var(--secondary);
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 0 8px 8px 0;
+            text-align: left;
+        }
+
+        .quote {
+            font-style: italic;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .author {
+            color: var(--secondary);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .footer {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .share-btn {
+            background: var(--gradient);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 1.5rem;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .share-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .share-btn:hover::before {
+            left: 100%;
+        }
+
+        .share-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: confettiRain 3s linear infinite;
+        }
+
+        @keyframes confettiRain {
+            to {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 2rem;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .countdown {
+                font-size: 3rem;
+            }
+            
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Days Until Freedom</h1>
+        <p class="subtitle">Your wife's entrepreneurial journey countdown</p>
+        
+        <div class="counter-container">
+            <div class="label">⏰ Countdown Timer</div>
+            <div class="countdown" id="countdown">295</div>
+            <div class="status">🎉 She's quitting her job soon!</div>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" style="--progress-width: 0%"></div>
+        </div>
+        
+        <div class="info-grid">
+            <div class="info-card">
+                <div class="info-value" id="days">295</div>
+                <div class="info-label">Days Remaining</div>
+            </div>
+            <div class="info-card">
+                <div class="info-value" id="weeks">42</div>
+                <div class="info-label">Weeks</div>
+            </div>
+            <div class="info-card">
+                <div class="info-value" id="daysCompleted">0</div>
+                <div class="info-label">Days Completed</div>
+            </div>
+        </div>
+        
+        <div class="motivation">
+            <div class="quote">"The only way to do great work is to love what you do. Now she's doing what she loves!"</div>
+            <div class="author">— Chris Jobs</div>
+        </div>
+        
+        <button class="share-btn" onclick="shareSite()">🔗 Share This Beautiful Tracker</button>
+        
+        <div class="footer">
+            <p>Built with ❤️ for her entrepreneurial journey</p>
+            <p>Updated daily • Powered by determination</p>
+        </div>
+    </div>
+
+    <script>
+        // Calculate target date (295 days from now)
+        const startDate = new Date();
+        const targetDate = new Date(startDate);
+        targetDate.setDate(startDate.getDate() + 295);
+        
+        function updateCountdown() {
+            const now = new Date();
+            const timeDiff = targetDate - now;
+            const daysLeft = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+            
+            // Update main countdown
+            document.getElementById('countdown').textContent = daysLeft;
+            document.getElementById('days').textContent = daysLeft;
+            
+            // Calculate weeks
+            const weeksLeft = Math.ceil(daysLeft / 7);
+            document.getElementById('weeks').textContent = weeksLeft;
+            
+            // Calculate days completed
+            const daysCompleted = 295 - daysLeft;
+            document.getElementById('daysCompleted').textContent = daysCompleted;
+            
+            // Update progress bar
+            const progressPercent = ((295 - daysLeft) / 295) * 100;
+            document.querySelector('.progress-fill').style.setProperty('--progress-width', progressPercent + '%');
+            
+            // Special message when close to the goal
+            if (daysLeft <= 7 && daysLeft > 0) {
+                document.querySelector('.status').textContent = '🎉 ONLY ' + daysLeft + ' DAYS LEFT!';
+                document.querySelector('.status').style.background = 'rgba(236, 72, 153, 0.3)';
+                document.querySelector('.status').style.borderColor = 'rgba(236, 72, 153, 0.6)';
+                celebrate();
+            } else if (daysLeft === 0) {
+                document.querySelector('.status').textContent = '🎊 SHE QUIT HER JOB!';
+                document.querySelector('.status').style.background = 'rgba(16, 185, 129, 0.3)';
+                document.querySelector('.status').style.borderColor = 'rgba(16, 185, 129, 0.6)';
+            } else {
+                document.querySelector('.status').textContent = '🎉 She\'s quitting her job soon!';
+                document.querySelector('.status').style.background = 'rgba(16, 185, 129, 0.2)';
+                document.querySelector('.status').style.borderColor = 'rgba(16, 185, 129, 0.4)';
+            }
+        }
+        
+        function celebrate() {
+            // Create confetti effect
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 70%, 50%)`;
+                    confetti.style.animationDuration = (Math.random() * 2 + 1) + 's';
+                    document.body.appendChild(confetti);
+                    setTimeout(() => confetti.remove(), 3000);
+                }, i * 50);
+            }
+        }
+        
+        function shareSite() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Days Until Freedom - Wife\'s Tracker',
+                    text: 'Join me in counting down the days until my wife quits her job to start her beautiful tracker website journey! 🎯',
+                    url: window.location.href,
+                });
+            } else {
+                // Fallback: copy to clipboard
+                navigator.clipboard.writeText(window.location.href).then(() => {
+                    alert('Link copied to clipboard! 📋');
+                });
+            }
+        }
+        
+        // Update countdown every second
+        updateCountdown();
+        setInterval(updateCountdown, 1000 * 60 * 60); // Update hourly
+        
+        // Initialize progress bar animation
+        setTimeout(() => {
+            document.querySelector('.progress-fill').style.setProperty('--progress-width', '0%');
+        }, 100);
+    </script>
+</body>
+</html>
