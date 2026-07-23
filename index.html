@@ -343,61 +343,79 @@
         targetDate.setDate(startDate.getDate() + 295);
         
         function updateCountdown() {
-            // Get current time in IST (UTC+5:30)
-            const now = new Date();
-            const istOffset = 5.5 * 60 * 60 * 1000; // IST is UTC+5:30
-            const istTime = new Date(now.getTime() + istOffset);
-            
-            const timeDiff = targetDate - istTime;
-            const hoursLeft = Math.ceil(timeDiff / (1000 * 60 * 60));
-            const daysLeft = Math.ceil(hoursLeft / 24);
-            
-            // Update main countdown display
-            document.getElementById('countdown').textContent = daysLeft;
-            document.getElementById('days').textContent = daysLeft;
-            document.getElementById('hours').textContent = hoursLeft;
-            
-            // Calculate weeks and progress
-            const weeksLeft = Math.ceil(daysLeft / 7);
-            document.getElementById('weeks').textContent = weeksLeft;
-            
-            const daysCompleted = 295 - daysLeft;
-            document.getElementById('daysCompleted').textContent = daysCompleted;
-            
-            // Update progress bar
-            const progressPercent = ((295 - daysLeft) / 295) * 100;
-            document.querySelector('.progress-fill').style.setProperty('--progress-width', progressPercent + '%');
-            
-            // Fun animations and effects based on time left
-            if (hoursLeft <= 168 && hoursLeft > 0) { // Less than a week
-                document.querySelector('.status').textContent = '🔥 ONLY ' + daysLeft + ' DAYS (' + hoursLeft + ' HOURS) LEFT!';
-                document.querySelector('.status').style.background = 'rgba(236, 72, 153, 0.4)';
-                document.querySelector('.status').style.borderColor = 'rgba(236, 72, 153, 0.7)';
-                celebrate();
-                addSparkles();
-            } else if (hoursLeft <= 72) { // Less than 3 days
-                document.querySelector('.status').textContent = '⚡ JUST ' + daysLeft + ' DAYS REMAINING!';
-                document.querySelector('.status').style.background = 'rgba(99, 102, 241, 0.4)';
-                document.querySelector('.status').style.borderColor = 'rgba(99, 102, 241, 0.7)';
-                addSparkles();
-            } else if (hoursLeft === 0) {
-                document.querySelector('.status').textContent = '🎊 SHE QUIT HER JOB! IT\'S HAPPENING NOW!';
-                document.querySelector('.status').style.background = 'rgba(16, 185, 129, 0.4)';
-                document.querySelector('.status').style.borderColor = 'rgba(16, 185, 129, 0.7)';
-                celebrate();
-                startFireworks();
-            } else if (hoursLeft <= 24) {
-                document.querySelector('.status').textContent = '🌅 TOMORROW IS THE DAY!';
-                addSparkles();
-            } else {
-                document.querySelector('.status').textContent = '🎉 She\'s quitting her job soon!';
-                document.querySelector('.status').style.background = 'rgba(16, 185, 129, 0.2)';
-                document.querySelector('.status').style.borderColor = 'rgba(16, 185, 129, 0.4)';
-            }
-            
-            // Update timezone display
-            document.getElementById('timezone').textContent = 'IST'; // Indian Standard Time
-        }
+                    const nowUTC = new Date();
+                    // If target already passed
+                    if (nowUTC >= targetDate) {
+                        document.getElementById('countdown').textContent = '0';
+                        document.getElementById('days').textContent = '0';
+                        document.getElementById('hours').textContent = '0';
+                        document.getElementById('weeks').textContent = '0';
+                        document.getElementById('daysCompleted').textContent = '295';
+                        document.querySelector('.progress-fill').style.setProperty('--progress-width', '100%');
+                        document.querySelector('.status').textContent = '🎊 SHE QUIT HER JOB! IT\'S HAPPENING NOW!';
+                        document.querySelector('.status').style.background = 'rgba(16, 185, 129, 0.4)';
+                        document.querySelector('.status').style.borderColor = 'rgba(16, 185, 129, 0.6)';
+                        celebrate();
+                        startFireworks();
+                        return;
+                    }
+                    const IST_OFFSET = 5.5 * 60 * 60 * 1000; // UTC+5:30
+                    const DAY_MS = 24 * 60 * 60 * 1000;
+                    const DAY_START_OFFSET = 6 * 60 * 60 * 1000; // 6:00 AM IST marks start of day
+                    // Shift time so that 6:00 AM IST is zero of the day
+                    const nowIST = nowUTC.getTime() + IST_OFFSET;
+                    const nowShifted = nowIST - DAY_START_OFFSET;
+                    const targetIST = targetDate.getTime() + IST_OFFSET;
+                    const targetShifted = targetIST - DAY_START_OFFSET;
+                    const nowDay = Math.floor(nowShifted / DAY_MS);
+                    const targetDay = Math.floor(targetShifted / DAY_MS);
+                    let daysLeft = targetDay - nowDay;
+                    if (daysLeft < 0) daysLeft = 0;
+                    // Total hours left (for display)
+                    const timeDiff = targetDate - nowUTC;
+                    const hoursLeft = Math.ceil(timeDiff / (1000 * 60 * 60));
+                    // Update displays
+                    document.getElementById('countdown').textContent = daysLeft;
+                    document.getElementById('days').textContent = daysLeft;
+                    document.getElementById('hours').textContent = hoursLeft;
+                    // Weeks
+                    const weeksLeft = Math.ceil(daysLeft / 7);
+                    document.getElementById('weeks').textContent = weeksLeft;
+                    // Days completed
+                    const daysCompleted = 295 - daysLeft;
+                    document.getElementById('daysCompleted').textContent = daysCompleted;
+                    // Progress bar
+                    const progressPercent = ((295 - daysLeft) / 295) * 100;
+                    document.querySelector('.progress-fill').style.setProperty('--progress-width', progressPercent + '%');
+                    // Fun animations and effects based on time left
+                    if (hoursLeft <= 168 && hoursLeft > 0) { // Less than a week
+                        document.querySelector('.status').textContent = '🔥 ONLY ' + daysLeft + ' DAYS (' + hoursLeft + ' HOURS) LEFT!';
+                        document.querySelector('.status').style.background = 'rgba(236, 72, 153, 0.4)';
+                        document.querySelector('.status').style.borderColor = 'rgba(236, 72, 153, 0.7)';
+                        celebrate();
+                        addSparkles();
+                    } else if (hoursLeft <= 72) { // Less than 3 days
+                        document.querySelector('.status').textContent = '⚡ JUST ' + daysLeft + ' DAYS REMAINING!';
+                        document.querySelector('.status').style.background = 'rgba(99, 102, 241, 0.4)';
+                        document.querySelector('.status').style.borderColor = 'rgba(99, 102, 241, 0.7)';
+                        addSparkles();
+                    } else if (hoursLeft === 0) {
+                        document.querySelector('.status').textContent = '🎊 SHE QUIT HER JOB! IT\'S HAPPENING NOW!';
+                        document.querySelector('.status').style.background = 'rgba(16, 185, 129, 0.4)';
+                        document.querySelector('.status').style.borderColor = 'rgba(16, 185, 129, 0.7)';
+                        celebrate();
+                        startFireworks();
+                    } else if (hoursLeft <= 24) {
+                        document.querySelector('.status').textContent = '🌅 TOMORROW IS THE DAY!';
+                        addSparkles();
+                    } else {
+                        document.querySelector('.status').textContent = '🎉 She\\'s quitting her job soon!';
+                        document.querySelector('.status').style.background = 'rgba(16, 185, 129, 0.2)';
+                        document.querySelector('.status').style.borderColor = 'rgba(16, 185, 129, 0.4)';
+                    }
+                    // Update timezone display
+                    document.getElementById('timezone').textContent = 'IST'; // Indian Standard Time
+                }
         
         function addSparkles() {
             // Add sparkle effect to the counter
