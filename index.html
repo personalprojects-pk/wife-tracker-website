@@ -337,20 +337,30 @@
     </div>
 
     <script>
-        // Calculate target date (295 days from now) - persisted across sessions
+        // Calculate target date (295 days from now) - persisted across sessions with IST 6 AM reset
         let targetDate;
-        const storedTarget = localStorage.getItem('wifeTargetDate');
-        if (storedTarget) {
-            targetDate = new Date(storedTarget);
-        } else {
+        let lastISTUpdate = localStorage.getItem('lastISTUpdate');
+        const istOffset = 5.5 * 60 * 60 * 1000; // UTC+5:30
+        
+        function shouldResetDay() {
+            const now = new Date();
+            const nowIST = new Date(now.getTime() + istOffset);
+            // Check if we've passed 6 AM IST today (reset point)
+            return nowIST.getHours() >= 6 && nowIST.getDate() !== new Date(lastISTUpdate).getDate();
+        }
+        
+        if (!lastISTUpdate || shouldResetDay()) {
             const startDate = new Date();
             targetDate = new Date(startDate);
             targetDate.setDate(startDate.getDate() + 295);
             localStorage.setItem('wifeTargetDate', targetDate.toISOString());
+            localStorage.setItem('lastISTUpdate', new Date().toISOString());
+        } else {
+            const storedTarget = localStorage.getItem('wifeTargetDate');
+            targetDate = storedTarget ? new Date(storedTarget) : null;
         }
         
         function updateCountdown() {
-                    // Get current time and target date (both in UTC for consistency)
                     const now = new Date();
                     const timeDiff = targetDate - now;
             
@@ -370,6 +380,11 @@
                         return;
                     }
             
+                    // Calculate all time components
+                    const totalHours = Math.ceil(timeDiff / (1000 * 60 * 60));
+                    const totalMinutes = Math.ceil(timeDiff / (1000 * 60));
+                    const totalSeconds = Math.ceil(timeDiff / 1000);
+            
                     // Convert to IST (UTC+5:30) for India time
                     const nowIST = new Date(now.getTime() + (5.5 * 60 * 60 * 1000));
                     const targetIST = new Date(targetDate.getTime() + (5.5 * 60 * 60 * 1000));
@@ -380,7 +395,7 @@
                     const timeDiffIST = targetTime - nowTime;
             
                     // Get current IST day (where day starts at 6 AM IST)
-                    const IST_DAY_START_MS = 6 * 60 * 60 * 1000;
+                    const IST_DAY_START_MS = 6 * 60 * 60 * 1000; // 6:00 AM IST
                     const nowISTAdjusted = nowTime + IST_DAY_START_MS;
                     const targetISTAdjusted = targetTime + IST_DAY_START_MS;
             
@@ -390,10 +405,10 @@
                     let daysLeft = targetDay - nowDay;
                     if (daysLeft < 0) daysLeft = 0;
             
-                    // Calculate total hours left for display
-                    const hoursLeft = Math.ceil(timeDiffIST / (1000 * 60 * 60));
+                    // Calculate total hours left for display (using actual time)
+                    const hoursLeft = totalHours;
             
-                    // Update the displays
+                    // Update all displays
                     document.getElementById('countdown').textContent = daysLeft;
                     document.getElementById('days').textContent = daysLeft;
                     document.getElementById('hours').textContent = hoursLeft;
@@ -405,11 +420,11 @@
                     const daysCompleted = 295 - daysLeft;
                     document.getElementById('daysCompleted').textContent = daysCompleted;
             
-                    // Update progress bar
+                    // Update progress bar with smooth animation
                     const progressPercent = ((295 - daysLeft) / 295) * 100;
                     document.querySelector('.progress-fill').style.setProperty('--progress-width', progressPercent + '%');
             
-                    // Fun animations and effects
+                    // Fun animations and effects based on time left
                     if (hoursLeft <= 168 && hoursLeft > 0) { // Less than a week
                         document.querySelector('.status').textContent = '🔥 ONLY ' + daysLeft + ' DAYS (' + hoursLeft + ' HOURS) LEFT!';
                         document.querySelector('.status').style.background = 'rgba(236, 72, 153, 0.4)';
@@ -435,9 +450,85 @@
                         document.querySelector('.status').style.background = 'rgba(16, 185, 129, 0.2)';
                         document.querySelector('.status').style.borderColor = 'rgba(16, 185, 129, 0.4)';
                     }
+                    // Get all necessary DOM elements for progress tracking
+                            const countdownEl = document.getElementById('countdown');
+                            const daysEl = document.getElementById('days');
+                            const hoursEl = document.getElementById('hours');
+                            const weeksEl = document.getElementById('weeks');
+                            const daysCompletedEl = document.getElementById('daysCompleted');
+                            const progressFillEl = document.querySelector('.progress-fill');
+                            const timezoneEl = document.getElementById('timezone');
+        
+                            function addProgressStats() {
+                                // Add detailed progress statistics below the progress bar
+                                const progressStats = document.createElement('div');
+                                progressStats.className = 'progress-stats';
+                                progressStats.innerHTML = `
+                                    <div class="stats-row">
+                                        <div class="stat-item">
+                                            <span class="stat-value" id="totalHours">7080</span>
+                                            <span class="stat-label">Total Hours Target</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <span class="stat-value" id="elapsedHours">0</span>
+                                            <span class="stat-label">Hours Elapsed</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <span class="stat-value" id="daysPerWeek">~42</span>
+                                            <span class="stat-label">Days per Week</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <span class="stat-value" id="timeRemaining">${hoursLeft}</span>
+                                            <span class="stat-label">Hours Remaining</span>
+                                        </div>
+                                    </div>
+                                `;
             
-                    document.getElementById('timezone').textContent = 'IST';
-                }
+                                const progressBarContainer = document.querySelector('.progress-bar');
+                                progressBarContainer.appendChild(progressStats);
+            
+                                // Add CSS for progress stats
+                                const progressStatsCSS = document.createElement('style');
+                                progressStatsCSS.textContent = `
+                                    .progress-stats {
+                                        display: flex;
+                                        justify-content: space-around;
+                                        margin-top: 1rem;
+                                        padding: 1rem;
+                                        background: rgba(255, 255, 255, 0.05);
+                                        border-radius: 8px;
+                                        border: 1px solid rgba(255, 255, 255, 0.1);
+                                    }
+                
+                                    .stats-row {
+                                        display: flex;
+                                        justify-content: space-between;
+                                        width: 100%;
+                                        flex-wrap: wrap;
+                                        gap: 1rem;
+                                    }
+                
+                                    .stat-item {
+                                        text-align: center;
+                                        min-width: 80px;
+                                    }
+                
+                                    .stat-value {
+                                        font-size: 1.5rem;
+                                        font-weight: 700;
+                                        color: var(--primary);
+                                        display: block;
+                                        margin-bottom: 0.25rem;
+                                    }
+                
+                                    .stat-label {
+                                        font-size: 0.8rem;
+                                        color: var(--text-secondary);
+                                    }
+                                `;
+            
+                                document.head.appendChild(progressStatsCSS);
+                            }
         
         function addSparkles() {
             // Add sparkle effect to the counter
