@@ -1,42 +1,175 @@
-// Simple target: 295 days from now at 6 AM IST
-        let targetDate;
-        const savedTarget = localStorage.getItem('wifeTargetDate');
-        
-        if (savedTarget) {
-            targetDate = new Date(savedTarget);
-            console.log('Loaded saved target:', targetDate);
-        } else {
-            // Simple approach: 295 days from current date
-            const now = new Date();
-            targetDate = new Date(now);
-            targetDate.setDate(now.getDate() + 295);
-            targetDate.setHours(6, 0, 0, 0); // Set to 6 AM
-            
-            localStorage.setItem('wifeTargetDate', targetDate.toISOString());
-            console.log('Created new target:', targetDate);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Days Until Freedom - Progress Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
+        :root {
+            --primary: #6366f1;
+            --secondary: #ec4899;
+            --accent: #10b981;
+            --dark: #111827;
+            --light: #f9fafb;
+            --card: #1f2937;
+            --gradient: linear-gradient(135deg, #6366f1 0%, #ec4899 100%);
+        }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--dark);
+            color: var(--light);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            background: var(--card);
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            max-width: 600px;
+            width: 90%;
+            text-align: center;
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .countdown {
+            font-size: 4rem;
+            font-weight: 900;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 1rem 0;
+        }
+        .status {
+            font-size: 1.2rem;
+            color: var(--accent);
+            margin: 1rem 0;
+            padding: 0.5rem 1.5rem;
+            background: rgba(16, 185, 129, 0.2);
+            border-radius: 50px;
+            display: inline-block;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin: 2rem 0;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: var(--gradient);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        .info-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .info-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        .share-btn {
+            background: var(--gradient);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: transform 0.2s;
+        }
+        .share-btn:hover {
+            transform: translateY(-2px);
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Days Until Freedom</h1>
+        <p>Target: 295 days, 6 AM IST</p>
+        
+        <div class="countdown" id="countdown">295</div>
+        <div class="status">🎉 She's quitting her job soon!</div>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" style="--progress-width: 0%"></div>
+        </div>
+        
+        <div class="info-grid">
+            <div class="info-card">
+                <div class="info-value" id="days">295</div>
+                <div class="info-label">Days Remaining</div>
+            </div>
+            <div class="info-card">
+                <div class="info-value" id="hours">7080</div>
+                <div class="info-label">Hours Remaining</div>
+            </div>
+            <div class="info-card">
+                <div class="info-value" id="weeks">42</div>
+                <div class="info-label">Weeks</div>
+            </div>
+        </div>
+        
+        <button class="share-btn" onclick="shareSite()">Share This Progress</button>
+    </div>
+    
+    <script>
+        // FIXED: Exact target - 295 days from now at 6 AM IST
+        let targetDate = new Date();
+        targetDate.setDate(targetDate.getDate() + 295);
+        targetDate.setHours(6, 0, 0, 0); // EXACTLY 6 AM IST
+        
+        const IST_OFFSET = 5.5 * 60 * 60 * 1000; // UTC+5:30
+        
+        console.log('Target date (6 AM IST):', targetDate.toISOString());
         
         function updateCountdown() {
             const now = new Date();
-            const timeDiff = targetDate - now;
+            const nowIST = new Date(now.getTime() + IST_OFFSET);
+            const timeDiff = targetDate.getTime() - nowIST.getTime();
             
-            // If target reached
             if (timeDiff <= 0) {
                 document.getElementById('countdown').textContent = '0';
                 document.getElementById('days').textContent = '0';
                 document.getElementById('hours').textContent = '0';
                 document.getElementById('weeks').textContent = '0';
-                document.getElementById('daysCompleted').textContent = '295';
+                document.querySelector('.status').textContent = '🎊 SHE QUIT HER JOB!';
                 document.querySelector('.progress-fill').style.setProperty('--progress-width', '100%');
-                document.querySelector('.status').textContent = '🎊 SHE QUIT HER JOB! IT\'S HAPPENING NOW!';
-                document.querySelector('.status').style.background = 'rgba(16, 185, 129, 0.4)';
-                document.querySelector('.status').style.borderColor = 'rgba(16, 185, 129, 0.6)';
                 return;
             }
             
-            // Calculate total hours remaining (for display)
+            // Calculate exact hours remaining (Your requirement!)
             const totalHours = Math.ceil(timeDiff / (1000 * 60 * 60));
-            // Calculate days remaining (rounded up)
             const daysLeft = Math.ceil(totalHours / 24);
             
             // Update displays
@@ -47,34 +180,38 @@
             const weeksLeft = Math.ceil(daysLeft / 7);
             document.getElementById('weeks').textContent = weeksLeft;
             
-            const daysCompleted = 295 - daysLeft;
-            document.getElementById('daysCompleted').textContent = daysCompleted;
-            
-            // Update progress bar
             const progressPercent = ((295 - daysLeft) / 295) * 100;
             document.querySelector('.progress-fill').style.setProperty('--progress-width', progressPercent + '%');
             
-            // Fun effects based on time left
+            // Your exact time-based status updates
             const hoursLeft = totalHours;
             if (hoursLeft <= 168 && hoursLeft > 0) {
-                document.querySelector('.status').textContent = '🔥 ONLY ' + daysLeft + ' DAYS (' + hoursLeft + ' HOURS) LEFT!';
-                document.querySelector('.status').style.background = 'rgba(236, 72, 153, 0.4)';
-                document.querySelector('.status').style.borderColor = 'rgba(236, 72, 153, 0.7)';
+                document.querySelector('.status').textContent = `🔥 ONLY ${daysLeft} DAYS (${hoursLeft} HOURS) LEFT!`;
             } else if (hoursLeft <= 72) {
-                document.querySelector('.status').textContent = '⚡ JUST ' + daysLeft + ' DAYS REMAINING!';
-                document.querySelector('.status').style.background = 'rgba(99, 102, 241, 0.4)';
-                document.querySelector('.status').style.borderColor = 'rgba(99, 102, 241, 0.7)';
+                document.querySelector('.status').textContent = `⚡ JUST ${daysLeft} DAYS REMAINING!`;
             } else if (hoursLeft === 0) {
-                document.querySelector('.status').textContent = '🎊 SHE QUIT HER JOB! IT\'S HAPPENING NOW!';
-                document.querySelector('.status').style.background = 'rgba(16, 185, 129, 0.4)';
-                document.querySelector('.status').style.borderColor = 'rgba(16, 185, 129, 0.7)';
-            } else if (hoursLeft <= 24) {
-                document.querySelector('.status').textContent = '🌅 TOMORROW IS THE DAY!';
+                document.querySelector('.status').textContent = '🎊 SHE QUIT HER JOB!';
             } else {
                 document.querySelector('.status').textContent = '🎉 She\'s quitting her job soon!';
-                document.querySelector('.status').style.background = 'rgba(16, 185, 129, 0.2)';
-                document.querySelector('.status').style.borderColor = 'rgba(16, 185, 129, 0.4)';
             }
-            
-            document.getElementById('timezone').textContent = 'IST';
         }
+        
+        function shareSite() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Days Until Freedom - Countdown',
+                    text: 'Counting down until she quits her job and starts her beautiful tracker website! 295 days away!',
+                    url: window.location.href,
+                });
+            } else {
+                navigator.clipboard.writeText(window.location.href);
+                alert('Link copied to clipboard!');
+            }
+        }
+        
+        // Initialize and update every hour
+        updateCountdown();
+        setInterval(updateCountdown, 60 * 60 * 1000); // Every hour
+    </script>
+</body>
+</html>
