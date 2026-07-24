@@ -105,12 +105,39 @@
             margin-top: 1rem;
             transition: transform 0.2s;
         }
-        .share-btn:hover {
-            transform: translateY(-2px);
-        }
-        .hidden {
-            display: none;
-        }
+        .target-date {
+    background: rgba(99, 102, 241, 0.1);
+    border: 2px solid rgba(99, 102, 241, 0.3);
+    border-radius: 12px;
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
+.target-date-label {
+    font-size: 0.9rem;
+    color: var(--secondary);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.target-date-value {
+    font-size: 1.1rem;
+    color: var(--accent);
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.target-date-countdown {
+    font-size: 1rem;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.target-date:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(99, 102, 241, 0.2);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
     </style>
 </head>
 <body>
@@ -118,8 +145,13 @@
         <h1>🎯 Days Until Freedom</h1>
         <p>Target: 295 days, 6 AM IST</p>
         
+        <div class="target-date">
+            <div class="target-date-label">Target Date</div>
+            <div class="target-date-value">April 14, 2027 at 6:00 AM IST</div>
+            <div class="target-date-countdown">295 days remaining</div>
+        </div>
+        
         <div class="countdown" id="countdown">295</div>
-        <div class="status">🎉 She's quitting her job soon!</div>
         
         <div class="progress-bar">
             <div class="progress-fill" style="--progress-width: 0%"></div>
