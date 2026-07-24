@@ -337,10 +337,17 @@
     </div>
 
     <script>
-        // Calculate target date (295 days from now)
-        const startDate = new Date();
-        const targetDate = new Date(startDate);
-        targetDate.setDate(startDate.getDate() + 295);
+        // Calculate target date (295 days from now) - persisted across sessions
+        let targetDate;
+        const storedTarget = localStorage.getItem('wifeTargetDate');
+        if (storedTarget) {
+            targetDate = new Date(storedTarget);
+        } else {
+            const startDate = new Date();
+            targetDate = new Date(startDate);
+            targetDate.setDate(startDate.getDate() + 295);
+            localStorage.setItem('wifeTargetDate', targetDate.toISOString());
+        }
         
         function updateCountdown() {
                     // Get current time and target date (both in UTC for consistency)
