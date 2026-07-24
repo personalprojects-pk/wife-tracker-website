@@ -105,39 +105,31 @@
             margin-top: 1rem;
             transition: transform 0.2s;
         }
-        .target-date {
-    background: rgba(99, 102, 241, 0.1);
-    border: 2px solid rgba(99, 102, 241, 0.3);
-    border-radius: 12px;
-    padding: 1rem;
-    margin: 1rem 0;
-}
+        .target-date-label {
+                    font-size: 0.9rem;
+                    color: var(--secondary);
+                    font-weight: 600;
+                    margin-bottom: 0.5rem;
+                }
 
-.target-date-label {
-    font-size: 0.9rem;
-    color: var(--secondary);
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-}
+                .target-date-value {
+                    font-size: 1.1rem;
+                    color: var(--accent);
+                    font-weight: 700;
+                    margin-bottom: 0.5rem;
+                }
 
-.target-date-value {
-    font-size: 1.1rem;
-    color: var(--accent);
-    font-weight: 700;
-    margin-bottom: 0.5rem;
-}
+                .target-date-countdown {
+                    font-size: 1rem;
+                    color: var(--text-primary);
+                    font-weight: 500;
+                }
 
-.target-date-countdown {
-    font-size: 1rem;
-    color: var(--text-primary);
-    font-weight: 500;
-}
-
-.target-date:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(99, 102, 241, 0.2);
-    transition: transform 0.2s, box-shadow 0.2s;
-}
+                .target-date:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 5px 15px rgba(99, 102, 241, 0.2);
+                    transition: transform 0.2s, box-shadow 0.2s;
+                }
     </style>
 </head>
 <body>
@@ -147,7 +139,7 @@
         
         <div class="target-date">
             <div class="target-date-label">Target Date</div>
-            <div class="target-date-value">April 14, 2027 at 6:00 AM IST</div>
+            <div class="target-date-value">May 15, 2027 at 6:00 AM IST</div>
             <div class="target-date-countdown">295 days remaining</div>
         </div>
         
@@ -177,9 +169,7 @@
     
     <script>
         // FIXED: Exact target - 295 days from now at 6 AM IST
-        let targetDate = new Date();
-        targetDate.setDate(targetDate.getDate() + 295);
-        targetDate.setHours(6, 0, 0, 0); // EXACTLY 6 AM IST
+        let targetDate = new Date('2027-05-15T06:00:00Z');
         
         const IST_OFFSET = 5.5 * 60 * 60 * 1000; // UTC+5:30
         
